@@ -476,7 +476,7 @@
                 <div class="input-group">
                     <label class="input-label" for="weekend-rate">Weekend Rate ($)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="weekend-rate" class="input" value="150" min="0" step="1">
+                        <input type="number" id="weekend-rate" class="input" value="175" min="0" step="1">
                         <div class="input-spinner">
                             <button class="spinner-btn" onclick="adjustRate('weekend-rate', 1)">
                                 <span class="material-symbols-outlined">keyboard_arrow_up</span>
@@ -698,7 +698,7 @@
 
         function getPricingData() {
             const weekdayRate = parseInt(document.getElementById('weekday-rate').value) || 120;
-            const weekendRate = parseInt(document.getElementById('weekend-rate').value) || 150;
+            const weekendRate = parseInt(document.getElementById('weekend-rate').value) || 175;
             const regularPremium = parseInt(document.getElementById('regular-premium').value) || 40;
             const peakPremium = parseInt(document.getElementById('peak-premium').value) || 60;
 
