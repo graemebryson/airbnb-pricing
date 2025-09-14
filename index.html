@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airbnb Dynamic Pricing Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,6 +19,16 @@
             line-height: 1.5;
             min-height: 100vh;
             padding: 2rem 1rem;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+            font-size: 1.25rem;
+            color: hsl(221.2, 83.2%, 53.3%);
         }
 
         .container {
@@ -146,6 +157,11 @@
             transition: background-color 0.2s;
         }
 
+        .spinner-btn .material-symbols-outlined {
+            font-size: 0.875rem;
+            color: hsl(215.4, 16.3%, 46.9%);
+        }
+
         .spinner-btn:hover {
             background: hsl(214.3, 31.8%, 91.4%);
         }
@@ -183,6 +199,11 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+        }
+
+        .nav-btn .material-symbols-outlined {
+            font-size: 1.25rem;
+            color: hsl(215.4, 16.3%, 46.9%);
         }
 
         .nav-btn:hover {
@@ -423,7 +444,8 @@
     <div class="container">
         <div class="header">
             <h1>
-                📅 Airbnb Dynamic Pricing Calculator
+                <span class="material-symbols-outlined">calendar_month</span>
+                Airbnb Dynamic Pricing Calculator
             </h1>
             <p>Optimize your pricing with intelligent weekday, weekend, and holiday rate adjustments.</p>
         </div>
@@ -431,7 +453,7 @@
         <div class="grid grid-2">
             <div class="card">
                 <div class="card-header">
-                    <span>💰</span>
+                    <span class="material-symbols-outlined">attach_money</span>
                     <div>
                         <div class="card-title">Base Pricing Configuration</div>
                         <div class="card-subtitle">Set your standard weekday and weekend rates.</div>
@@ -442,8 +464,12 @@
                     <div class="input-wrapper">
                         <input type="number" id="weekday-rate" class="input" value="120" min="0" step="1">
                         <div class="input-spinner">
-                            <button class="spinner-btn" onclick="adjustRate('weekday-rate', 1)">▲</button>
-                            <button class="spinner-btn" onclick="adjustRate('weekday-rate', -1)">▼</button>
+                            <button class="spinner-btn" onclick="adjustRate('weekday-rate', 1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_up</span>
+                            </button>
+                            <button class="spinner-btn" onclick="adjustRate('weekday-rate', -1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -452,8 +478,12 @@
                     <div class="input-wrapper">
                         <input type="number" id="weekend-rate" class="input" value="150" min="0" step="1">
                         <div class="input-spinner">
-                            <button class="spinner-btn" onclick="adjustRate('weekend-rate', 1)">▲</button>
-                            <button class="spinner-btn" onclick="adjustRate('weekend-rate', -1)">▼</button>
+                            <button class="spinner-btn" onclick="adjustRate('weekend-rate', 1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_up</span>
+                            </button>
+                            <button class="spinner-btn" onclick="adjustRate('weekend-rate', -1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -461,7 +491,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <span>⭐</span>
+                    <span class="material-symbols-outlined">star</span>
                     <div>
                         <div class="card-title">Holiday Premium Settings</div>
                         <div class="card-subtitle">Configure premium rates for special occasions.</div>
@@ -472,8 +502,12 @@
                     <div class="input-wrapper">
                         <input type="number" id="regular-premium" class="input" value="40" min="0" max="200" step="1">
                         <div class="input-spinner">
-                            <button class="spinner-btn" onclick="adjustRate('regular-premium', 1)">▲</button>
-                            <button class="spinner-btn" onclick="adjustRate('regular-premium', -1)">▼</button>
+                            <button class="spinner-btn" onclick="adjustRate('regular-premium', 1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_up</span>
+                            </button>
+                            <button class="spinner-btn" onclick="adjustRate('regular-premium', -1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -482,8 +516,12 @@
                     <div class="input-wrapper">
                         <input type="number" id="peak-premium" class="input" value="60" min="0" max="200" step="1">
                         <div class="input-spinner">
-                            <button class="spinner-btn" onclick="adjustRate('peak-premium', 1)">▲</button>
-                            <button class="spinner-btn" onclick="adjustRate('peak-premium', -1)">▼</button>
+                            <button class="spinner-btn" onclick="adjustRate('peak-premium', 1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_up</span>
+                            </button>
+                            <button class="spinner-btn" onclick="adjustRate('peak-premium', -1)">
+                                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -492,7 +530,7 @@
 
         <div class="card">
             <div class="card-header">
-                <span>📅</span>
+                <span class="material-symbols-outlined">calendar_today</span>
                 <div>
                     <div class="card-title">Interactive Pricing Calendar</div>
                     <div class="card-subtitle">View your pricing strategy at a glance.</div>
@@ -500,9 +538,13 @@
             </div>
             <div class="calendar-container">
                 <div class="calendar-header">
-                    <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                    <button class="nav-btn" onclick="changeMonth(-1)">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
                     <h2 class="calendar-title" id="calendar-title">January 2025</h2>
-                    <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                    <button class="nav-btn" onclick="changeMonth(1)">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
                 </div>
                 <div class="calendar-grid" id="calendar-grid">
                     <!-- Calendar will be generated by JavaScript -->
@@ -530,7 +572,7 @@
 
         <div class="card">
             <div class="card-header">
-                <span>📊</span>
+                <span class="material-symbols-outlined">bar_chart</span>
                 <div>
                     <div class="card-title">Detailed Pricing Breakdown</div>
                     <div class="card-subtitle">Complete overview of your pricing structure.</div>
@@ -555,7 +597,7 @@
         <div class="grid grid-3">
             <div class="card">
                 <div class="card-header">
-                    <span>🔥</span>
+                    <span class="material-symbols-outlined">local_fire_department</span>
                     <div>
                         <div class="card-title">Peak Holidays (+60%)</div>
                         <div class="card-subtitle">Highest demand periods</div>
@@ -568,7 +610,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <span>📅</span>
+                    <span class="material-symbols-outlined">event</span>
                     <div>
                         <div class="card-title">Regular Holidays (+40%)</div>
                         <div class="card-subtitle">Standard holiday periods</div>
@@ -581,7 +623,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <span>📈</span>
+                    <span class="material-symbols-outlined">trending_up</span>
                     <div>
                         <div class="card-title">Revenue Performance Dashboard</div>
                         <div class="card-subtitle">Monthly revenue insights</div>
