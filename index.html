@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Dynamic Pricing Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: hsl(210, 40%, 98%);
+            color: hsl(222.2, 84%, 4.9%);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: hsl(222.2, 84%, 4.9%);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: hsl(215.4, 16.3%, 46.9%);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: hsl(222.2, 84%, 4.9%);
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: hsl(215.4, 16.3%, 46.9%);
+            margin-top: 0.25rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: hsl(222.2, 84%, 4.9%);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: hsl(221.2, 83.2%, 53.3%);
+            box-shadow: 0 0 0 3px hsl(221.2, 83.2%, 53.3%, 0.1);
+        }
+
+        .input-spinner {
+            position: absolute;
+            right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+
+        .spinner-btn {
+            width: 1.25rem;
+            height: 1rem;
+            border: none;
+            background: hsl(210, 40%, 98%);
+            color: hsl(215.4, 16.3%, 46.9%);
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+
+        .spinner-btn:hover {
+            background: hsl(214.3, 31.8%, 91.4%);
+        }
+
+        .calendar-container {
+            margin-bottom: 1rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: hsl(222.2, 84%, 4.9%);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            width: 2rem;
+            height: 2rem;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: hsl(210, 40%, 98%);
+            border-color: hsl(221.2, 83.2%, 53.3%);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: hsl(214.3, 31.8%, 91.4%);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .calendar-day-header {
+            background: hsl(210, 40%, 98%);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: hsl(215.4, 16.3%, 46.9%);
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 0.5rem;
+            min-height: 4rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day:hover {
+            background: hsl(210, 40%, 98%);
+        }
+
+        .calendar-day.other-month {
+            color: hsl(215.4, 16.3%, 46.9%);
+            background: hsl(210, 40%, 98%);
+        }
+
+        .calendar-day.weekday {
+            background: hsl(0, 0%, 96%);
+        }
+
+        .calendar-day.weekend {
+            background: white;
+        }
+
+        .calendar-day.regular-holiday {
+            background: hsl(38, 92%, 90%);
+        }
+
+        .calendar-day.peak-holiday {
+            background: hsl(0, 84%, 90%);
+        }
+
+        .day-number {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .day-price {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .day-type {
+            font-size: 0.625rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+        }
+
+        .legend-color.weekday {
+            background: hsl(0, 0%, 96%);
+        }
+
+        .legend-color.weekend {
+            background: white;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+        }
+
+        .legend-color.regular-holiday {
+            background: hsl(38, 92%, 90%);
+        }
+
+        .legend-color.peak-holiday {
+            background: hsl(0, 84%, 90%);
+        }
+
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .pricing-table th,
+        .pricing-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%);
+        }
+
+        .pricing-table th {
+            background: hsl(210, 40%, 98%);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .pricing-table td {
+            font-size: 0.875rem;
+        }
+
+        .holiday-list {
+            list-style: none;
+        }
+
+        .holiday-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .holiday-item:last-child {
+            border-bottom: none;
+        }
+
+        .holiday-name {
+            font-weight: 500;
+        }
+
+        .holiday-price {
+            font-weight: 600;
+            color: hsl(221.2, 83.2%, 53.3%);
+        }
+
+        .revenue-summary {
+            text-align: center;
+            padding: 2rem;
+            background: hsl(142.1, 76.2%, 36.3%, 0.1);
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .revenue-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: hsl(142.1, 76.2%, 36.3%);
+            margin-bottom: 1rem;
+        }
+
+        .revenue-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .revenue-stat {
+            text-align: center;
+        }
+
+        .revenue-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: hsl(142.1, 76.2%, 36.3%);
+        }
+
+        .revenue-stat-label {
+            font-size: 0.875rem;
+            color: hsl(142.1, 76.2%, 36.3%, 0.8);
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-day {
+                min-height: 3rem;
+                padding: 0.25rem;
+            }
+
+            .day-price {
+                font-size: 0.625rem;
+            }
+
+            .day-type {
+                display: none;
+            }
+
+            .legend {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                📅 Airbnb Dynamic Pricing Calculator
+            </h1>
+            <p>Optimize your pricing with intelligent weekday, weekend, and holiday rate adjustments.</p>
+        </div>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <span>💰</span>
+                    <div>
+                        <div class="card-title">Base Pricing Configuration</div>
+                        <div class="card-subtitle">Set your standard weekday and weekend rates.</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="weekday-rate">Weekday Rate ($)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="weekday-rate" class="input" value="120" min="0" step="1">
+                        <div class="input-spinner">
+                            <button class="spinner-btn" onclick="adjustRate('weekday-rate', 1)">▲</button>
+                            <button class="spinner-btn" onclick="adjustRate('weekday-rate', -1)">▼</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="weekend-rate">Weekend Rate ($)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="weekend-rate" class="input" value="150" min="0" step="1">
+                        <div class="input-spinner">
+                            <button class="spinner-btn" onclick="adjustRate('weekend-rate', 1)">▲</button>
+                            <button class="spinner-btn" onclick="adjustRate('weekend-rate', -1)">▼</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>⭐</span>
+                    <div>
+                        <div class="card-title">Holiday Premium Settings</div>
+                        <div class="card-subtitle">Configure premium rates for special occasions.</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="regular-premium">Regular Holiday Premium (%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="regular-premium" class="input" value="40" min="0" max="200" step="1">
+                        <div class="input-spinner">
+                            <button class="spinner-btn" onclick="adjustRate('regular-premium', 1)">▲</button>
+                            <button class="spinner-btn" onclick="adjustRate('regular-premium', -1)">▼</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="peak-premium">Peak Holiday Premium (%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="peak-premium" class="input" value="60" min="0" max="200" step="1">
+                        <div class="input-spinner">
+                            <button class="spinner-btn" onclick="adjustRate('peak-premium', 1)">▲</button>
+                            <button class="spinner-btn" onclick="adjustRate('peak-premium', -1)">▼</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>📅</span>
+                <div>
+                    <div class="card-title">Interactive Pricing Calendar</div>
+                    <div class="card-subtitle">View your pricing strategy at a glance.</div>
+                </div>
+            </div>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                    <h2 class="calendar-title" id="calendar-title">January 2025</h2>
+                    <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar will be generated by JavaScript -->
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color weekday"></div>
+                        <span id="weekday-legend">Weekday ($120)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color weekend"></div>
+                        <span id="weekend-legend">Weekend ($150)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color regular-holiday"></div>
+                        <span id="regular-holiday-legend">Regular Holiday (+40%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color peak-holiday"></div>
+                        <span id="peak-holiday-legend">Peak Holiday (+60%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>📊</span>
+                <div>
+                    <div class="card-title">Detailed Pricing Breakdown</div>
+                    <div class="card-subtitle">Complete overview of your pricing structure.</div>
+                </div>
+            </div>
+            <table class="pricing-table">
+                <thead>
+                    <tr>
+                        <th>Day Type</th>
+                        <th>Base Rate</th>
+                        <th>Premium</th>
+                        <th>Final Rate</th>
+                        <th>Examples</th>
+                    </tr>
+                </thead>
+                <tbody id="pricing-table-body">
+                    <!-- Table will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-header">
+                    <span>🔥</span>
+                    <div>
+                        <div class="card-title">Peak Holidays (+60%)</div>
+                        <div class="card-subtitle">Highest demand periods</div>
+                    </div>
+                </div>
+                <ul class="holiday-list" id="peak-holidays-list">
+                    <!-- Peak holidays will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>📅</span>
+                    <div>
+                        <div class="card-title">Regular Holidays (+40%)</div>
+                        <div class="card-subtitle">Standard holiday periods</div>
+                    </div>
+                </div>
+                <ul class="holiday-list" id="regular-holidays-list">
+                    <!-- Regular holidays will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>📈</span>
+                    <div>
+                        <div class="card-title">Revenue Performance Dashboard</div>
+                        <div class="card-subtitle">Monthly revenue insights</div>
+                    </div>
+                </div>
+                <div class="revenue-summary" id="revenue-summary">
+                    <!-- Revenue summary will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        // Holiday definitions
+        const peakHolidays = [
+            { name: "New Year's Day", month: 0, day: 1 },
+            { name: "Independence Day", month: 6, day: 4 },
+            { name: "Thanksgiving", month: 10, day: 27 },
+            { name: "Black Friday", month: 10, day: 28 },
+            { name: "Christmas Eve", month: 11, day: 24 },
+            { name: "Christmas Day", month: 11, day: 25 },
+            { name: "New Year's Eve", month: 11, day: 31 }
+        ];
+
+        const regularHolidays = [
+            { name: "MLK Jr. Day", month: 0, day: 20 },
+            { name: "Presidents' Day", month: 1, day: 17 },
+            { name: "Memorial Day", month: 4, day: 26 },
+            { name: "Labor Day", month: 8, day: 1 },
+            { name: "Columbus Day", month: 9, day: 13 },
+            { name: "Veterans Day", month: 10, day: 11 }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateAllDisplays();
+        });
+
+        function setupEventListeners() {
+            // Input change listeners
+            document.getElementById('weekday-rate').addEventListener('input', updateAllDisplays);
+            document.getElementById('weekend-rate').addEventListener('input', updateAllDisplays);
+            document.getElementById('regular-premium').addEventListener('input', updateAllDisplays);
+            document.getElementById('peak-premium').addEventListener('input', updateAllDisplays);
+        }
+
+        function adjustRate(inputId, change) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseInt(input.value) || 0;
+            const newValue = Math.max(0, currentValue + change);
+            input.value = newValue;
+            updateAllDisplays();
+        }
+
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            updateCalendar();
+        }
+
+        function getPricingData() {
+            const weekdayRate = parseInt(document.getElementById('weekday-rate').value) || 120;
+            const weekendRate = parseInt(document.getElementById('weekend-rate').value) || 150;
+            const regularPremium = parseInt(document.getElementById('regular-premium').value) || 40;
+            const peakPremium = parseInt(document.getElementById('peak-premium').value) || 60;
+
+            return {
+                weekdayRate,
+                weekendRate,
+                regularPremium,
+                peakPremium,
+                regularHolidayRate: Math.round(weekendRate * (1 + regularPremium / 100)),
+                peakHolidayRate: Math.round(weekendRate * (1 + peakPremium / 100))
+            };
+        }
+
+        function isHoliday(date) {
+            const month = date.getMonth();
+            const day = date.getDate();
+
+            // Check peak holidays
+            for (const holiday of peakHolidays) {
+                if (holiday.month === month && holiday.day === day) {
+                    return { type: 'peak', holiday };
+                }
+            }
+
+            // Check regular holidays
+            for (const holiday of regularHolidays) {
+                if (holiday.month === month && holiday.day === day) {
+                    return { type: 'regular', holiday };
+                }
+            }
+
+            return null;
+        }
+
+        function getDayType(date) {
+            const dayOfWeek = date.getDay();
+            const holiday = isHoliday(date);
+
+            if (holiday) {
+                return holiday.type === 'peak' ? 'peak-holiday' : 'regular-holiday';
+            }
+
+            return (dayOfWeek >= 1 && dayOfWeek <= 4) ? 'weekday' : 'weekend';
+        }
+
+        function getDayPrice(date) {
+            const pricing = getPricingData();
+            const dayType = getDayType(date);
+
+            switch (dayType) {
+                case 'weekday':
+                    return pricing.weekdayRate;
+                case 'weekend':
+                    return pricing.weekendRate;
+                case 'regular-holiday':
+                    return pricing.regularHolidayRate;
+                case 'peak-holiday':
+                    return pricing.peakHolidayRate;
+                default:
+                    return pricing.weekdayRate;
+            }
+        }
+
+        function getDayTypeLabel(dayType) {
+            switch (dayType) {
+                case 'weekday':
+                    return 'Weekday';
+                case 'weekend':
+                    return 'Weekend';
+                case 'regular-holiday':
+                    return 'Regular Holiday';
+                case 'peak-holiday':
+                    return 'Peak Holiday';
+                default:
+                    return 'Weekday';
+            }
+        }
+
+        function updateCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            const calendarTitle = document.getElementById('calendar-title');
+            
+            // Update title
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            calendarTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                calendarGrid.appendChild(header);
+            });
+
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startDay = firstDay.getDay();
+
+            // Add previous month's trailing days
+            const prevMonth = new Date(currentYear, currentMonth, 0);
+            const daysInPrevMonth = prevMonth.getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const date = new Date(currentYear, currentMonth - 1, day);
+                addCalendarDay(calendarGrid, day, date, true);
+            }
+
+            // Add current month's days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                addCalendarDay(calendarGrid, day, date, false);
+            }
+
+            // Add next month's leading days
+            const totalCells = 42; // 7x6 grid
+            const remainingCells = totalCells - (startDay + daysInMonth);
+            for (let day = 1; day <= remainingCells; day++) {
+                const date = new Date(currentYear, currentMonth + 1, day);
+                addCalendarDay(calendarGrid, day, date, true);
+            }
+        }
+
+        function addCalendarDay(container, dayNumber, date, isOtherMonth) {
+            const dayElement = document.createElement('div');
+            const dayType = getDayType(date);
+            const price = getDayPrice(date);
+            const typeLabel = getDayTypeLabel(dayType);
+
+            dayElement.className = `calendar-day ${dayType}`;
+            if (isOtherMonth) {
+                dayElement.classList.add('other-month');
+            }
+
+            dayElement.innerHTML = `
+                <div class="day-number">${dayNumber}</div>
+                <div class="day-price">$${price}</div>
+                <div class="day-type">${typeLabel}</div>
+            `;
+
+            container.appendChild(dayElement);
+        }
+
+        function updatePricingTable() {
+            const pricing = getPricingData();
+            const tableBody = document.getElementById('pricing-table-body');
+            
+            const rows = [
+                {
+                    type: 'Weekday',
+                    baseRate: pricing.weekdayRate,
+                    premium: '0%',
+                    finalRate: pricing.weekdayRate,
+                    examples: 'Mon-Thu'
+                },
+                {
+                    type: 'Weekend',
+                    baseRate: pricing.weekendRate,
+                    premium: '0%',
+                    finalRate: pricing.weekendRate,
+                    examples: 'Fri-Sun'
+                },
+                {
+                    type: 'Regular Holiday',
+                    baseRate: pricing.weekendRate,
+                    premium: `+${pricing.regularPremium}%`,
+                    finalRate: pricing.regularHolidayRate,
+                    examples: 'MLK Day, Memorial Day, etc.'
+                },
+                {
+                    type: 'Peak Holiday',
+                    baseRate: pricing.weekendRate,
+                    premium: `+${pricing.peakPremium}%`,
+                    finalRate: pricing.peakHolidayRate,
+                    examples: 'Christmas, New Year, etc.'
+                }
+            ];
+
+            tableBody.innerHTML = rows.map(row => `
+                <tr>
+                    <td>${row.type}</td>
+                    <td>$${row.baseRate}</td>
+                    <td>${row.premium}</td>
+                    <td>$${row.finalRate}</td>
+                    <td>${row.examples}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateHolidayLists() {
+            const pricing = getPricingData();
+            
+            // Update peak holidays
+            const peakList = document.getElementById('peak-holidays-list');
+            peakList.innerHTML = peakHolidays.map(holiday => `
+                <li class="holiday-item">
+                    <span class="holiday-name">${holiday.name}</span>
+                    <span class="holiday-price">$${pricing.peakHolidayRate}</span>
+                </li>
+            `).join('');
+
+            // Update regular holidays
+            const regularList = document.getElementById('regular-holidays-list');
+            regularList.innerHTML = regularHolidays.map(holiday => `
+                <li class="holiday-item">
+                    <span class="holiday-name">${holiday.name}</span>
+                    <span class="holiday-price">$${pricing.regularHolidayRate}</span>
+                </li>
+            `).join('');
+        }
+
+        function updateRevenueSummary() {
+            const pricing = getPricingData();
+            const revenueSummary = document.getElementById('revenue-summary');
+            
+            // Calculate monthly revenue (simplified - assumes 30 days)
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const weekdayDays = Math.floor(daysInMonth * 4 / 7); // Approximate
+            const weekendDays = daysInMonth - weekdayDays;
+            
+            const monthlyRevenue = (weekdayDays * pricing.weekdayRate) + (weekendDays * pricing.weekendRate);
+            
+            revenueSummary.innerHTML = `
+                <div class="revenue-title">Monthly Revenue Potential</div>
+                <div class="revenue-stats">
+                    <div class="revenue-stat">
+                        <div class="revenue-stat-value">$${monthlyRevenue.toLocaleString()}</div>
+                        <div class="revenue-stat-label">Estimated Monthly</div>
+                    </div>
+                    <div class="revenue-stat">
+                        <div class="revenue-stat-value">$${Math.round(monthlyRevenue / daysInMonth)}</div>
+                        <div class="revenue-stat-label">Average Daily</div>
+                    </div>
+                    <div class="revenue-stat">
+                        <div class="revenue-stat-value">$${pricing.peakHolidayRate}</div>
+                        <div class="revenue-stat-label">Peak Rate</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateLegends() {
+            const pricing = getPricingData();
+            
+            document.getElementById('weekday-legend').textContent = `Weekday ($${pricing.weekdayRate})`;
+            document.getElementById('weekend-legend').textContent = `Weekend ($${pricing.weekendRate})`;
+            document.getElementById('regular-holiday-legend').textContent = `Regular Holiday (+${pricing.regularPremium}%)`;
+            document.getElementById('peak-holiday-legend').textContent = `Peak Holiday (+${pricing.peakPremium}%)`;
+        }
+
+        function updateAllDisplays() {
+            updateCalendar();
+            updatePricingTable();
+            updateHolidayLists();
+            updateRevenueSummary();
+            updateLegends();
+        }
+    </script>
+</body>
+</html>
