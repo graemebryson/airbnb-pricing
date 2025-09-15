@@ -747,19 +747,21 @@
         function getDayPrice(date) {
             const pricing = getPricingData();
             const dayType = getDayType(date);
+            const dayOfWeek = date.getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+            const isFriday = dayOfWeek === 5;
 
-            switch (dayType) {
-                case 'weekday':
-                    return pricing.weekdayRate;
-                case 'weekend':
-                    return pricing.weekendRate;
-                case 'regular-holiday':
-                    return pricing.regularHolidayRate;
-                case 'peak-holiday':
-                    return pricing.peakHolidayRate;
-                default:
-                    return pricing.weekdayRate;
+            // Determine base rate based on actual day of week
+            const baseRate = (isWeekend || isFriday) ? pricing.weekendRate : pricing.weekdayRate;
+
+            // Apply holiday premium if it's a holiday
+            if (dayType === 'regular-holiday') {
+                return Math.round(baseRate * (1 + pricing.regularPremium / 100));
+            } else if (dayType === 'peak-holiday') {
+                return Math.round(baseRate * (1 + pricing.peakPremium / 100));
             }
+
+            return baseRate;
         }
 
         function getDayTypeLabel(dayType) {
@@ -859,6 +861,12 @@
             const pricing = getPricingData();
             const tableBody = document.getElementById('pricing-table-body');
             
+            // Calculate holiday rates based on actual day type
+            const regularHolidayWeekdayRate = Math.round(pricing.weekdayRate * (1 + pricing.regularPremium / 100));
+            const regularHolidayWeekendRate = Math.round(pricing.weekendRate * (1 + pricing.regularPremium / 100));
+            const peakHolidayWeekdayRate = Math.round(pricing.weekdayRate * (1 + pricing.peakPremium / 100));
+            const peakHolidayWeekendRate = Math.round(pricing.weekendRate * (1 + pricing.peakPremium / 100));
+            
             const rows = [
                 {
                     type: 'Weekday',
@@ -875,18 +883,32 @@
                     examples: 'Fri-Sun'
                 },
                 {
-                    type: 'Regular Holiday',
-                    baseRate: pricing.weekendRate,
+                    type: 'Regular Holiday (Weekday)',
+                    baseRate: pricing.weekdayRate,
                     premium: `+${pricing.regularPremium}%`,
-                    finalRate: pricing.regularHolidayRate,
-                    examples: 'MLK Day, Memorial Day, etc.'
+                    finalRate: regularHolidayWeekdayRate,
+                    examples: 'MLK Day, Labor Day, etc.'
                 },
                 {
-                    type: 'Peak Holiday',
+                    type: 'Regular Holiday (Weekend)',
+                    baseRate: pricing.weekendRate,
+                    premium: `+${pricing.regularPremium}%`,
+                    finalRate: regularHolidayWeekendRate,
+                    examples: 'Memorial Day, etc.'
+                },
+                {
+                    type: 'Peak Holiday (Weekday)',
+                    baseRate: pricing.weekdayRate,
+                    premium: `+${pricing.peakPremium}%`,
+                    finalRate: peakHolidayWeekdayRate,
+                    examples: 'New Year\'s Day, etc.'
+                },
+                {
+                    type: 'Peak Holiday (Weekend)',
                     baseRate: pricing.weekendRate,
                     premium: `+${pricing.peakPremium}%`,
-                    finalRate: pricing.peakHolidayRate,
-                    examples: 'Christmas, New Year, etc.'
+                    finalRate: peakHolidayWeekendRate,
+                    examples: 'Christmas, New Year\'s Eve, etc.'
                 }
             ];
 
@@ -904,12 +926,23 @@
         function updateHolidayLists() {
             const pricing = getPricingData();
             
+            // Helper function to get holiday price based on day of week
+            function getHolidayPrice(holiday, isPeak) {
+                const date = new Date(2025, holiday.month, holiday.day);
+                const dayOfWeek = date.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+                const isFriday = dayOfWeek === 5;
+                const baseRate = (isWeekend || isFriday) ? pricing.weekendRate : pricing.weekdayRate;
+                const premium = isPeak ? pricing.peakPremium : pricing.regularPremium;
+                return Math.round(baseRate * (1 + premium / 100));
+            }
+            
             // Update peak holidays
             const peakList = document.getElementById('peak-holidays-list');
             peakList.innerHTML = peakHolidays.map(holiday => `
                 <li class="holiday-item">
                     <span class="holiday-name">${holiday.name}</span>
-                    <span class="holiday-price">$${pricing.peakHolidayRate}</span>
+                    <span class="holiday-price">$${getHolidayPrice(holiday, true)}</span>
                 </li>
             `).join('');
 
@@ -918,7 +951,7 @@
             regularList.innerHTML = regularHolidays.map(holiday => `
                 <li class="holiday-item">
                     <span class="holiday-name">${holiday.name}</span>
-                    <span class="holiday-price">$${pricing.regularHolidayRate}</span>
+                    <span class="holiday-price">$${getHolidayPrice(holiday, false)}</span>
                 </li>
             `).join('');
         }
